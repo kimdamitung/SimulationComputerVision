@@ -47,7 +47,7 @@ def cubes_rotate(img, X, Y, width, height, rotate):
 	Args:
 	img   : link imread cv2 
 	X     : go to X
-	Y     : go to Y
+	Y     : go to Ygi
 	width : chiều dài
 	height: chiều rộng
 	rotate: gốc quay
