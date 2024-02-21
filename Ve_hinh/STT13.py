@@ -44,18 +44,130 @@ def Check_size(img):
     return height, width, channels
 
 
-def pentagon(img, goto_X, goto_Y, radius = 100, n = 5):
-    color = (255, 0, 0)
+def pentagonNotWeight_0(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
+    color_blue = (255, 0, 0)
     thickness = 2
-    angle = 360 / n
+    original_degree = 360 / n
     points = []
     for i in range(n):
-        x = int(goto_X + radius * np.sin(np.radians(i * angle - 90)))
-        y = int(goto_Y + radius * np.cos(np.radians(i * angle - 90)))
-        points.append((x, y))
+        if i in [0, 1, 4]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
+            points.append((x, y))
+        if i in [2]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 10)
+            points.append((x, y))
+        if i in [3]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) + 10)
+            points.append((x, y))
     points = np.array(points, np.int32)
-    points = points.reshape((-1, 1, 2))
-    cv2.polylines(img, [points], isClosed=True, color=color, thickness= thickness)
+    cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
+
+
+def pentagonNotWeight_1(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
+    color_blue = (255, 0, 0)
+    thickness = 2
+    original_degree = 360 / n
+    points = []
+    for i in range(n):
+        if i in [0, 1]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
+            points.append((x, y))
+        if i in [2]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 10)
+            points.append((x, y))
+        if i in [4]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 15)
+            points.append((x, y))
+        if i in [3]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 13)
+            points.append((x, y))
+    points = np.array(points, np.int32)
+    cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
+
+
+def pentagonNotWeight_2(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
+    color_blue = (255, 0, 0)
+    thickness = 2
+    original_degree = 360 / n
+    points = []
+    for i in range(n):
+        if i in [1]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) + 10)
+            points.append((x, y))
+        if i in [0, 4]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
+            points.append((x, y))
+        if i in [2]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) + 7)
+            points.append((x, y))
+        if i in [3]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) + 10)
+            points.append((x, y))
+    points = np.array(points, np.int32)
+    cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
+
+
+def pentagonNotWeight_3(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
+    color_blue = (255, 0, 0)
+    thickness = 2
+    original_degree = 360 / n
+    points = []
+    for i in range(n):
+        if i in [0, 1, 2]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
+            points.append((x, y))
+        if i in [3]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 15)
+            points.append((x, y))
+        if i in [4]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)) - 5)
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 12)
+            points.append((x, y))
+    points = np.array(points, np.int32)
+    cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
+
+
+def pentagonNotWeight_4(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
+    color_blue = (255, 0, 0)
+    thickness = 2
+    original_degree = 360 / n
+    points = []
+    for i in range(n):
+        if i in [0]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 15)
+            points.append((x, y))
+        if i in [1, 2]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
+            points.append((x, y))
+        if i in [3]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 15)
+            points.append((x, y))
+        if i in [4]:
+            x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)) - 5)
+            y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 12)
+            points.append((x, y))
+        if i == 0:
+            cv2.circle(img, (x, y), 3, (0, 0, 0), 3)
+    points = np.array(points, np.int32)
+    cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
+
+
 
 image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/kimdami.jpg"
 img = cv2.imread(image_path)
@@ -66,10 +178,11 @@ Y = 300
 if img is not None:
     name = 'Nguyen Duy Tung'
     Write_Text_Img(img, 0, 600, name)
-    # pentagon_rotate(img, 150, 200, 72, 1.2)
-    # pentagon_rotate(img, 203, 122, 140, 1.2)
-    # pentagon_rotate(img, 278, 170, 72, 1.2)
-    pentagon(img, 200, 250)
+    pentagonNotWeight_0(img, 200, 250)
+    pentagonNotWeight_1(img, 345, 215)
+    pentagonNotWeight_2(img, 345, 290)
+    pentagonNotWeight_3(img, 260, 175)
+    pentagonNotWeight_4(img, 260, 343)
     cv2.imshow("STT 13", img)
     cv2.waitKey(0);
     cv2.destroyAllWindows()
