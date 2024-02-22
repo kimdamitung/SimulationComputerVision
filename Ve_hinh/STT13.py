@@ -162,8 +162,6 @@ def pentagonNotWeight_4(img, goto_X, goto_Y, radius = 80, rotate=0, n = 5):
             x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)) - 5)
             y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)) - 12)
             points.append((x, y))
-        if i == 0:
-            cv2.circle(img, (x, y), 3, (0, 0, 0), 3)
     points = np.array(points, np.int32)
     cv2.polylines(img, [points], isClosed=True, color=color_blue, thickness= thickness)
 

@@ -1,84 +1,40 @@
 import cv2
-import sys
 import numpy as np
 
-sys.stdout.reconfigure(encoding='utf-8')
-
-"""
-STT 1: Sử dụng các hàm vẽ hình trong OpenCV, dùng ngôn ngữ Python và phần
-mềm mô phỏng Pycharm hoặc tương đương để vẽ hình như sau và kèm tên của sinh viên
-vào dưới chân của hình:
-Mở rộng: Viết họ tên và vẽ 1 hình vuông trên ảnh được mở từ camera
-"""
-
-def Write_Text_Img(img, X, Y, name):
-	"""
-	Args:
-	img   : link ảnh 
-	X     : tọa độ X
-	Y     : tọa độ Y
-	name  : kí tự tên 
-	Returns: function
-	"""
-	text = 'Ho va ten: ' + name
-	position = (X, Y)
-	font = cv2.FONT_HERSHEY_SIMPLEX
-	scale = 1
-	color = (0, 0, 255)
-	font_size = 2
-	cv2.putText(img, text, position, font, scale, color, font_size)
-
-def Check_size(img):
-	"""
-	Args:
-	img   : link ảnh  
-	Returns: 
-	height   : chiều cao
-	width    : chiều dài
-	channels : số kênh màu
-	"""
-	height = img.shape[0]
-	width = img.shape[1]
-	channels = img.shape[2] if len(img.shape) > 2 else 1
-	return height, width, channels
-
-def cubes_rotate(img, X, Y, width, height, rotate):
-	"""
-	Args:
-	img   : link imread cv2 
-	X     : go to X
-	Y     : go to Ygi
-	width : chiều dài
-	height: chiều rộng
-	rotate: gốc quay
-	Returns: function
-	"""
-	rot = ((X, Y), (width, height), rotate)
-	color = (0, 0, 255)
-	box = cv2.boxPoints(rot) 
-	box = np.int0(box)
-	font_size = 2
-	cv2.drawContours(img, [box], 0, color, font_size)
-
-image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/kimdami.jpg"
+# Đọc ảnh và chuyển đổi thành ảnh xám
+image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/input_06.png"
 img = cv2.imread(image_path)
-# điều chỉnh tọa độ cho hình ảnh
-X = 50
-Y = 50
+height, width = img.shape[:2]
+new_height = int(height * 0.9)
+new_width = int(width * 0.9)
+img = cv2.resize(img, (new_width, new_height))
 
-if img is not None:
-	name = 'Nguyen Duy Tung'
-	Write_Text_Img(img, 0, 600, name)
-	# 25pixel + 10pixel
-	cubes_rotate(img, X + 25, Y + 125, 50, 50, 0)
-	cubes_rotate(img, X + 60, Y + 90, 50, 50, 60)
-	cubes_rotate(img, X + 110, Y + 100, 50, 50, 60*2)
-	cubes_rotate(img, X + 125, Y + 150, 50, 50, 0)
-	cubes_rotate(img, X + 90, Y + 187, 50, 50, 60)
-	cubes_rotate(img, X + 43, Y + 175, 50, 50, 60*2)
-	cv2.imshow("STT 1", img)
-	cv2.waitKey(0);
-	cv2.destroyAllWindows()
-	Check_size(img)
-else:
-	print("Lỗi. Không dẫn được ảnh")
+def identified_Circle(img):
+	gray = cv2.cvtColor(img , cv2.COLOR_BGR2GRAY)
+	median_img = cv2.medianBlur(gray, 5)
+	# Áp dụng HoughCircles trên ảnh xám median_img
+	circles = cv2.HoughCircles(median_img, cv2.HOUGH_GRADIENT, 1.011, 20, param1=100, param2=28, minRadius=0, maxRadius=55)
+	circles = np.uint16(np.around(circles))
+	for i in circles[0, :]:
+		cv2.circle(img, (i[0], i[1]), i[2], (0, 69, 255), 2)
+		cv2.putText(img, "circles", (i[0], i[1]), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 69, 255), 2)
+
+
+def identified_Triangle(img):
+	# code
+	imgGrey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	_, thresholds = cv2.threshold(imgGrey, 0, 255, cv2.THRESH_BINARY)
+	contours, _ = cv2.findContours(thresholds, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	for cnt in contours:
+	    approx = cv2.approxPolyDP(cnt, 0.025 * cv2.arcLength(cnt, True), True)
+	    x = approx.ravel()[0]
+	    y = approx.ravel()[1]
+	    if len(approx) == 3:
+	        cv2.drawContours(img, [approx], 0, (0, 69, 255), 5)
+	        cv2.putText(img, "Triangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 69, 255))
+
+identified_Circle(img)
+identified_Triangle(img)
+cv2.imshow("Example", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

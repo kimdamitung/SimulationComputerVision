@@ -1,52 +1,28 @@
 import cv2
 import numpy as np
 
-def Write_Text_Img(img, goto_X, goto_Y, name):
-    text = "Ho va ten: " + name
-    position = (goto_X, goto_Y)
-    font = cv2.FONT_ITALIC
-    scale = 1
-    color = (0, 0, 255)
-    thickness = 2
-    cv2.putText(img, text, position, font, scale, color,thickness)
-
-def Check_Size(img):
-    height = img.shape[0]
-    width = img.shape[1]
-    return height, width
-
-def square(img, goto_X, goto_Y, radius=160, rotate=45, n=4):
-    original_degree = 360 / n
-    color = (0, 0, 255)
-    thickness = 2
-    points = []
-    for i in range(n):
-        x = int(goto_X + radius * np.cos(np.radians(i * original_degree - rotate)))
-        y = int(goto_Y + radius * np.sin(np.radians(i * original_degree - rotate)))
-        points.append((x, y))
-    points = np.array(points, np.int32)
-    cv2.polylines(img, [points], isClosed=True, color=color, thickness=thickness)
-
-def hexagon_rotate(img, goto_X, goto_Y, radius=60, rotate=30, n=6):
-    original_degree = 360 / n
-    color = (0, 0, 255)
-    thickness = 2
-    points = []
-    for i in range(n):
-        x = int(goto_X + radius * np.cos(np.radians(i * original_degree)))
-        y = int(goto_Y + radius * np.sin(np.radians(i * original_degree)))
-        points.append((x, y))
-    points = np.array(points, np.int32)
-    cv2.polylines(img, [points], isClosed=True, color=color, thickness=thickness)
-
-
-image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/kimdami.jpg"
+# Đọc ảnh và chuyển đổi thành ảnh xám
+image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/input_06.png"
 img = cv2.imread(image_path)
-if img is not None:
-    Write_Text_Img(img, 0, 600, "Nguyen Duy Tung")
-    cv2.imshow("STT01", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    print("Height, width: ", Check_Size(img))
-else:
-    print("ERROR")
+height, width = img.shape[:2]
+new_height = int(height * 0.9)
+new_width = int(width * 0.9)
+img = cv2.resize(img, (new_width, new_height))
+
+# code
+imgGrey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+_, thresholds = cv2.threshold(imgGrey, 0, 255, cv2.THRESH_BINARY)
+contours, _ = cv2.findContours(thresholds, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+for cnt in contours:
+    approx = cv2.approxPolyDP(cnt, 0.025 * cv2.arcLength(cnt, True), True)
+    # cv2.drawContours(img, [approx], 0, (128, 128, 128), 5)
+    x = approx.ravel()[0]
+    y = approx.ravel()[1]
+    print(len(approx))
+    if len(approx) == 3:
+        cv2.drawContours(img, [approx], 0, (128, 69, 128), 5)
+        cv2.putText(img, "Shape", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (128, 128, 128))
+
+cv2.imshow("Example", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
