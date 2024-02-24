@@ -1,16 +1,14 @@
 import cv2
 import time 
-import pygame
 import numpy as np
 import mediapipe as mp
-import matplotlib.pyplot as plt
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.5)
 hands_videos = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
-def detectHandsLandmarks(image, hands, draw=True, display=True):
+def detectHandsLandmarks(image, hands, draw=True):
 	output_image = image.copy()
 	imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 	results = hands.process(imgRGB)
@@ -30,21 +28,9 @@ def detectHandsLandmarks(image, hands, draw=True, display=True):
 												circle_radius=2
 											)		
 			)
-	if display:
-		plt.figure(figsize=[15,15])
-		plt.subplot(1, 2, 1)
-		plt.imshow(image[:,:,::-1])
-		plt.title("Original Image")
-		plt.axis('off')
-		plt.subplot(1, 2, 2)
-		plt.imshow(output_image[:,:,::-1])
-		plt.title("Output")
-		plt.axis('off')
-		plt.show()
-	else:
-		return output_image, results
+	return output_image, results
 
-def countFinger(image, results, draw=True, display=True):
+def countFinger(image, results, draw=True):
 	height, width, _ = image.shape
 	output_image = image.copy()
 	count = {'RIGHT': 0, 'LEFT': 0}
@@ -88,17 +74,9 @@ def countFinger(image, results, draw=True, display=True):
 	if draw:
 		cv2.putText(output_image, "Counter finger: ", (20, 30),cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
 		cv2.putText(output_image, str(sum(count.values())), (width // 3 - 100, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
-	if display:
-	    # Display the output image.
-	    plt.figure(figsize=[10,10])
-	    plt.imshow(output_image[:,:,::-1])
-	    plt.title("Output Image")
-	    plt.axis('off')
-	    plt.show()
-	else:
-	   	return output_image, fingers_statuses, count
+	return output_image, fingers_statuses, count
 
-def annotate(image, results, fingers_statuses, count, display=True):
+def annotate(image, results, fingers_statuses, count):
 	height, width, _ = image.shape
 	output_image = image.copy()
 	HANDS_IMGS_PATHS = {
@@ -124,14 +102,7 @@ def annotate(image, results, fingers_statuses, count, display=True):
 			ROI = output_image[30 : 30 + hand_height, (hand_index * width // 2) + width // 12 : ((hand_index * width // 2) + width // 12 + hand_width)]
 			ROI[alpha_channel == 255] = hand_imageBGR[alpha_channel == 255]
 			output_image[30 : 30 + hand_height, (hand_index * width // 2) + width // 12 : ((hand_index * width // 2) + width // 12 + hand_width)] = ROI
-	if display:
-		plt.figure(figsize=[10,10])
-		plt.imshow(output_image[:,:,::-1])
-		plt.title("Output Image")
-		plt.axis('off')
-		plt.show()
-	else:
-		return output_image
+	return output_image
 
 
 camera_video = cv2.VideoCapture(0)
@@ -144,11 +115,11 @@ while camera_video.isOpened():
 	if not ok:
 		continue
 	frame = cv2.flip(frame, 1)
-	frame, results = detectHandsLandmarks(frame, hands_videos, display=False)
+	frame, results = detectHandsLandmarks(frame, hands_videos)
 	if results.multi_hand_landmarks:
-		frame, fingers_statuses, count = countFinger(frame, results, display=False)
+		frame, fingers_statuses, count = countFinger(frame, results)
 	if fingers_statuses is not None:
-		frame = annotate(frame, results, fingers_statuses, count, display=False)
+		frame = annotate(frame, results, fingers_statuses, count)
 	cv2.imshow("Fingers Counter", frame)
 	k = cv2.waitKey(1) & 0xFF
 	if(k == 27):
