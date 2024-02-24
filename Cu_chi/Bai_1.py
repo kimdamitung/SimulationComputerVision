@@ -86,8 +86,8 @@ def countFinger(image, results, draw=True, display=True):
 			fingers_statuses[hand_label.upper() + "_THUMB"] = True
 			count[hand_label.upper()] += 1
 	if draw:
-		cv2.putText(output_image, "Counter finger: ", (20, 50),cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
-		cv2.putText(output_image, str(sum(count.values())), (width // 3 - 100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+		cv2.putText(output_image, "Counter finger: ", (20, 30),cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
+		cv2.putText(output_image, str(sum(count.values())), (width // 3 - 100, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
 	if display:
 	    # Display the output image.
 	    plt.figure(figsize=[10,10])
@@ -108,11 +108,13 @@ def annotate(image, results, fingers_statuses, count, display=True):
 	if results.multi_hand_landmarks:
 		for hand_index, hand_info in enumerate(results.multi_handedness):
 			hand_label = hand_info.classification[0].label
-			HANDS_IMGS_PATHS[hand_label.upper()] = ['media/' + hand_label.lower() + '_all_fingers.png']
-		else:
-			for finger, status in fingers_statuses.items():
-				if status == True and finger.split("_")[0] == hand_label.upper():
-					HANDS_IMGS_PATHS[hand_label.upper()].append('media/' + finger.lower() + '.png')
+			HANDS_IMGS_PATHS[hand_label.upper()] = ['media/' + hand_label.lower() + '_hand_detected.png']
+			if count[hand_label.upper()] == 5:
+				HANDS_IMGS_PATHS[hand_label.upper()] = ['media/' + hand_label.lower() + '_all_fingers.png']
+			else:
+				for finger, status in fingers_statuses.items():
+					if status == True and finger.split("_")[0] == hand_label.upper():
+						HANDS_IMGS_PATHS[hand_label.upper()].append('media/' + finger.lower() + '.png')
 	for hand_index, hand_imgs_paths in enumerate(HANDS_IMGS_PATHS.values()):
 		for img_path in hand_imgs_paths:
 			hand_imageBGRA = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
@@ -121,7 +123,7 @@ def annotate(image, results, fingers_statuses, count, display=True):
 			hand_height, hand_width, _ = hand_imageBGR.shape
 			ROI = output_image[30 : 30 + hand_height, (hand_index * width // 2) + width // 12 : ((hand_index * width // 2) + width // 12 + hand_width)]
 			ROI[alpha_channel == 255] = hand_imageBGR[alpha_channel == 255]
-			output_image[30 : 30 + hand_height, (hand_index * idth // 2) + width // 12 : ((hand_index * width // 2) + width // 12 + hand_width)] = ROI
+			output_image[30 : 30 + hand_height, (hand_index * width // 2) + width // 12 : ((hand_index * width // 2) + width // 12 + hand_width)] = ROI
 	if display:
 		plt.figure(figsize=[10,10])
 		plt.imshow(output_image[:,:,::-1])
@@ -136,6 +138,7 @@ camera_video = cv2.VideoCapture(0)
 camera_video.set(3, 1980)
 camera_video.set(4, 960)
 # cv2.namedWindow('Duy Tung Counter Fingers', cv2.WINDOW_NORMAL)
+fingers_statuses = None
 while camera_video.isOpened():
 	ok, frame = camera_video.read()
 	if not ok:
@@ -144,10 +147,11 @@ while camera_video.isOpened():
 	frame, results = detectHandsLandmarks(frame, hands_videos, display=False)
 	if results.multi_hand_landmarks:
 		frame, fingers_statuses, count = countFinger(frame, results, display=False)
-	# frame = annotate(frame, results, fingers_statuses, count, display=False)
+	if fingers_statuses is not None:
+		frame = annotate(frame, results, fingers_statuses, count, display=False)
 	cv2.imshow("Fingers Counter", frame)
 	k = cv2.waitKey(1) & 0xFF
 	if(k == 27):
 		break
-# camera_video.release()
+camera_video.release()
 cv2.destroyAllWindows()
