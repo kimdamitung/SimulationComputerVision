@@ -1,31 +1,25 @@
 import cv2
+import numpy as np
 
-image_path = "D:/Thuc_Hanh/Ky_6_2024/BaiTapThiGiacMayTinh/BaiTapMoPhongNhom/img/input_06.png"
-img = cv2.imread(image_path)
-img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cap = cv2.VideoCapture(0)
 
-min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(img_gray)
-print("Giá trị ngưỡng nhỏ nhất:", min_val)
-print("Giá trị ngưỡng lớn nhất:", max_val)
-
-points_approx = []
-points = []
-ret, img_binary = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY)
-contours, hierarchy = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-for idx, cnt in enumerate( contours):
-    epsilon = 0.015 * cv2.arcLength(cnt, True)
-    approx = cv2.approxPolyDP(cnt, epsilon, True)
-    x, y, w, h = cv2.boundingRect(approx)
-    text = str(idx)
-    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_COMPLEX, 0.5, 1)
-    text_x = x + (w - text_size[0]) // 2
-    text_y = y + (h + text_size[1]) // 2
-    if len(approx) == 4:
-        print(f"{idx}: {len(approx)}")
-        cv2.drawContours(img, [approx], -1, (0, 69, 255), 2)
-        cv2.putText(img, text, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 69, 255), 1)
-
-
-cv2.imshow("Gray Image", img)
-cv2.waitKey(0)
+while True:
+    _, frame = cap.read()
+    blurred = cv2.GaussianBlur(frame, (5, 5), 0)
+    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    lower_blue = np.array([100, 50, 50])
+    upper_blue = np.array([140, 255, 255])
+    mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    # cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area > 1500:
+            cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
+    cv2.imshow("Frame", frame)
+    cv2.imshow("Mask", mask)
+    k = cv2.waitKey(1) & 0xFF
+    if k == 27:
+        break
+cap.release()
 cv2.destroyAllWindows()
