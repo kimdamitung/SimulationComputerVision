@@ -118,8 +118,8 @@ while camera_video.isOpened():
 	frame, results = detectHandsLandmarks(frame, hands_videos)
 	if results.multi_hand_landmarks:
 		frame, fingers_statuses, count = countFinger(frame, results)
-	if fingers_statuses is not None:
-		frame = annotate(frame, results, fingers_statuses, count)
+	# if fingers_statuses is not None:
+	# 	frame = annotate(frame, results, fingers_statuses, count)
 	cv2.imshow("Fingers Counter", frame)
 	k = cv2.waitKey(1) & 0xFF
 	if(k == 27):
